@@ -16,13 +16,17 @@ export interface Tournament {
 export interface Match {
     ID: number;
     tournament_id: number;
-    player1_id: number;
-    player2_id: number;
+    player1_id: number | null;
+    player2_id: number | null;
+    player1?: Participant;
+    player2?: Participant;
     score_p1: number;
     score_p2: number;
-    winner_id?: number;
+    winner_id?: number | null;
     phase: string;
     round: number;
+    next_match_id?: number | null;
+    next_match_slot?: number;
 }
 
 export interface ParticipantStats {

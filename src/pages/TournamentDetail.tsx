@@ -300,13 +300,13 @@ const TournamentDetail = () => {
                                                 }}
                                             >
                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: match.winner_id === match.player1_id ? 'bold' : 'normal' }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: (match.winner_id && match.winner_id === match.player1_id) ? 'bold' : 'normal' }}>
                                                         {match.player1?.nickname || "???"}
                                                     </Typography>
                                                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{match.score_p1}</Typography>
                                                 </Box>
                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: match.winner_id === match.player2_id ? 'bold' : 'normal' }}>
+                                                    <Typography variant="body2" sx={{ fontWeight: (match.winner_id && match.winner_id === match.player2_id) ? 'bold' : 'normal' }}>
                                                         {match.player2?.nickname || "???"}
                                                     </Typography>
                                                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{match.score_p2}</Typography>
