@@ -23,13 +23,13 @@ const initialState: TournamentsState = {
 };
 
 export const fetchTournaments = createAsyncThunk('tournaments/fetchAll', async (includeArchived: boolean = false) => {
-    const response = await fetch(`http://localhost:8081/tournaments${includeArchived ? '?include_archived=true' : ''}`);
+    const response = await fetch(`${config.apiUrl}/tournaments${includeArchived ? '?include_archived=true' : ''}`);
     if (!response.ok) throw new Error('Failed to fetch tournaments');
     return (await response.json()) as Tournament[];
 });
 
 export const createTournament = createAsyncThunk('tournaments/create', async (name: string) => {
-    const response = await fetch('http://localhost:8081/tournaments', {
+    const response = await fetch('${config.apiUrl}/tournaments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
@@ -39,14 +39,14 @@ export const createTournament = createAsyncThunk('tournaments/create', async (na
 });
 
 export const fetchTournamentDetails = createAsyncThunk('tournaments/fetchOne', async (id: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${id}`);
+    const response = await fetch(`${config.apiUrl}/tournaments/${id}`);
     if (!response.ok) throw new Error('Failed to fetch tournament details');
     return (await response.json()) as TournamentDetail;
 });
 
 export const addParticipantToTournament = createAsyncThunk('tournaments/addParticipant',
     async ({ tournamentId, participantId }: { tournamentId: number, participantId: number }) => {
-        const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/participants`, {
+        const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/participants`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ participant_id: participantId }),
@@ -57,7 +57,7 @@ export const addParticipantToTournament = createAsyncThunk('tournaments/addParti
 
 export const removeParticipantFromTournament = createAsyncThunk('tournaments/removeParticipant',
     async ({ tournamentId, participantId }: { tournamentId: number, participantId: number }) => {
-        const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/participants/${participantId}`, {
+        const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/participants/${participantId}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to remove participant');
@@ -65,7 +65,7 @@ export const removeParticipantFromTournament = createAsyncThunk('tournaments/rem
     });
 
 export const startTournament = createAsyncThunk('tournaments/start', async (tournamentId: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/start`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/start`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to start tournament');
@@ -74,7 +74,7 @@ export const startTournament = createAsyncThunk('tournaments/start', async (tour
 
 export const updateMatchScore = createAsyncThunk('matches/updateScore',
     async ({ matchId, winnerId, winType }: { matchId: number, winnerId: number, winType: string }) => {
-        const response = await fetch(`http://localhost:8081/matches/${matchId}/score`, {
+        const response = await fetch(`${config.apiUrl}/matches/${matchId}/score`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ winner_id: winnerId, win_type: winType }),
@@ -84,7 +84,7 @@ export const updateMatchScore = createAsyncThunk('matches/updateScore',
     });
 
 export const resetMatch = createAsyncThunk('matches/reset', async (matchId: number) => {
-    const response = await fetch(`http://localhost:8081/matches/${matchId}/reset`, {
+    const response = await fetch(`${config.apiUrl}/matches/${matchId}/reset`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to reset match');
@@ -93,7 +93,7 @@ export const resetMatch = createAsyncThunk('matches/reset', async (matchId: numb
 
 export const manualScoreUpdate = createAsyncThunk('matches/manualScore',
     async ({ matchId, scoreP1, scoreP2 }: { matchId: number, scoreP1: number, scoreP2: number }) => {
-        const response = await fetch(`http://localhost:8081/matches/${matchId}/manual`, {
+        const response = await fetch(`${config.apiUrl}/matches/${matchId}/manual`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ score_p1: scoreP1, score_p2: scoreP2 }),
@@ -103,7 +103,7 @@ export const manualScoreUpdate = createAsyncThunk('matches/manualScore',
     });
 
 export const advanceTournament = createAsyncThunk('tournaments/advance', async (tournamentId: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/advance`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/advance`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to advance tournament');
@@ -111,7 +111,7 @@ export const advanceTournament = createAsyncThunk('tournaments/advance', async (
 });
 
 export const archiveTournament = createAsyncThunk('tournaments/archive', async (id: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${id}/archive`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${id}/archive`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to archive tournament');
@@ -119,7 +119,7 @@ export const archiveTournament = createAsyncThunk('tournaments/archive', async (
 });
 
 export const generateGroups = createAsyncThunk('tournaments/generateGroups', async (tournamentId: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/groups`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/groups`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to generate groups');
@@ -127,7 +127,7 @@ export const generateGroups = createAsyncThunk('tournaments/generateGroups', asy
 });
 
 export const generateMatches = createAsyncThunk('tournaments/generateMatches', async (tournamentId: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/matches`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/matches`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to generate matches');
@@ -135,7 +135,7 @@ export const generateMatches = createAsyncThunk('tournaments/generateMatches', a
 });
 
 export const resetTournament = createAsyncThunk('tournaments/reset', async (tournamentId: number) => {
-    const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/reset`, {
+    const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/reset`, {
         method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to reset tournament');
@@ -209,3 +209,4 @@ const tournamentsSlice = createSlice({
 });
 
 export default tournamentsSlice.reducer;
+

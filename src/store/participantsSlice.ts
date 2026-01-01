@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Participant } from '../types';
+import { config } from '../config';
 
 export interface ParticipantsState {
     list: Participant[];
@@ -16,7 +17,7 @@ const initialState: ParticipantsState = {
 };
 
 export const fetchParticipants = createAsyncThunk('participants/fetchParticipants', async (includeArchived: boolean = false) => {
-    const response = await fetch(`http://localhost:8081/participants${includeArchived ? '?include_archived=true' : ''}`);
+    const response = await fetch(`${config.apiUrl}/participants${includeArchived ? '?include_archived=true' : ''}`);
     if (!response.ok) {
         throw new Error('Failed to fetch participants');
     }
@@ -24,7 +25,7 @@ export const fetchParticipants = createAsyncThunk('participants/fetchParticipant
 });
 
 export const fetchLeagueStats = createAsyncThunk('participants/fetchLeagueStats', async () => {
-    const response = await fetch('http://localhost:8081/stats');
+    const response = await fetch('${config.apiUrl}/stats');
     if (!response.ok) {
         throw new Error('Failed to fetch league stats');
     }
@@ -32,7 +33,7 @@ export const fetchLeagueStats = createAsyncThunk('participants/fetchLeagueStats'
 });
 
 export const addParticipant = createAsyncThunk('participants/addParticipant', async (newParticipant: Omit<Participant, 'ID'>) => {
-    const response = await fetch('http://localhost:8081/participants', {
+    const response = await fetch('${config.apiUrl}/participants', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const addParticipant = createAsyncThunk('participants/addParticipant', as
 });
 
 export const archiveParticipant = createAsyncThunk('participants/archive', async (id: number) => {
-    const response = await fetch(`http://localhost:8081/participants/${id}/archive`, {
+    const response = await fetch(`${config.apiUrl}/participants/${id}/archive`, {
         method: 'POST',
     });
     if (!response.ok) {
@@ -85,3 +86,4 @@ const participantsSlice = createSlice({
 });
 
 export default participantsSlice.reducer;
+
