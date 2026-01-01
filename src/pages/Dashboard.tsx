@@ -50,7 +50,7 @@ const Dashboard = () => {
                         <CardContent sx={{ textAlign: 'center' }}>
                             <MilitaryTechIcon sx={{ fontSize: 40 }} />
                             <Typography variant="h6">Total Participants</Typography>
-                            <Typography variant="h4">{leagueStats.length}</Typography>
+                            <Typography variant="h4">{leagueStats?.length}</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
