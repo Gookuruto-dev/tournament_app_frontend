@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, Stack, Grid, Divider, TextField, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, Typography, Stack, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { updateMatchScore, resetMatch, manualScoreUpdate, fetchTournamentDetails } from '../store/tournamentsSlice';
 

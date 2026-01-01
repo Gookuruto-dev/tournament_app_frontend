@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchParticipants, addParticipant, archiveParticipant } from '../store/participantsSlice';
+import type { ParticipantsState } from '../store/participantsSlice';
 import { Box, Button, TextField, List, ListItem, ListItemText, Typography, Paper, IconButton, Stack } from '@mui/material';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import type { RootState } from '../store';
@@ -8,7 +9,7 @@ import type { Participant } from '../types';
 
 const ParticipantList = () => {
     const dispatch = useAppDispatch();
-    const { list, status, error } = useAppSelector((state: RootState) => state.participants);
+    const { list, status, error } = useAppSelector((state: RootState) => state.participants as ParticipantsState);
     const [nickname, setNickname] = useState('');
 
     useEffect(() => {
