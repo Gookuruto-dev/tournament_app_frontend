@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Tournament, Participant } from '../types';
+import { config } from '../config';
 
 interface TournamentDetail extends Tournament {
     participants: Participant[];
