@@ -157,7 +157,7 @@ const tournamentsSlice = createSlice({
             .addCase(fetchTournamentDetails.fulfilled, (state, action) => {
                 state.currentTournament = action.payload;
             })
-            .addCase(addParticipantToTournament.fulfilled, (state) => {
+            .addCase(addParticipantToTournament.fulfilled, () => {
                 // Maybe just refetch or handle manually. For now, simple.
             })
             .addCase(startTournament.fulfilled, (state, action) => {

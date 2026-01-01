@@ -12,7 +12,7 @@ const ParticipantList = () => {
     const [nickname, setNickname] = useState('');
 
     useEffect(() => {
-        dispatch(fetchParticipants());
+        dispatch(fetchParticipants(false));
     }, [dispatch]);
 
     const handleSubmit = (e: React.FormEvent) => {

@@ -11,7 +11,7 @@ const TournamentList = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        dispatch(fetchTournaments());
+        dispatch(fetchTournaments(false));
     }, [dispatch]);
 
     const handleCreate = (e: React.FormEvent) => {
