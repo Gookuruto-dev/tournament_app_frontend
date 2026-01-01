@@ -54,6 +54,15 @@ export const addParticipantToTournament = createAsyncThunk('tournaments/addParti
         return { tournamentId, participantId }; // Return payload to update UI optimistically or trigger refetch
     });
 
+export const removeParticipantFromTournament = createAsyncThunk('tournaments/removeParticipant',
+    async ({ tournamentId, participantId }: { tournamentId: number, participantId: number }) => {
+        const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/participants/${participantId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to remove participant');
+        return { tournamentId, participantId };
+    });
+
 export const startTournament = createAsyncThunk('tournaments/start', async (tournamentId: number) => {
     const response = await fetch(`http://localhost:8081/tournaments/${tournamentId}/start`, {
         method: 'POST',

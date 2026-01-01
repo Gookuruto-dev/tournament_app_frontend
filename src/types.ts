@@ -34,6 +34,7 @@ export interface ParticipantStats {
     nickname: string;
     total_wins: number;
     total_points: number;
+    total_league_points: number;
     total_spin: number;
     total_burst: number;
     total_over: number;

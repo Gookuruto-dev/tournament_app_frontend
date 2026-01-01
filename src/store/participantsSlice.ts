@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Participant } from '../types';
 
-interface ParticipantsState {
+export interface ParticipantsState {
     list: Participant[];
     leagueStats: any[]; // ParticipantStats
     status: 'idle' | 'loading' | 'succeeded' | 'failed';

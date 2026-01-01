@@ -8,6 +8,7 @@ const TournamentList = () => {
     const dispatch = useAppDispatch();
     const { list } = useAppSelector((state) => state.tournaments);
     const [name, setName] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         dispatch(fetchTournaments());
@@ -21,11 +22,16 @@ const TournamentList = () => {
         }
     };
 
+    const filteredTournaments = list.filter(t =>
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.status.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
-        <Box>
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Typography variant="h4" gutterBottom>Tournaments</Typography>
 
-            <Paper sx={{ p: 2, mb: 4 }}>
+            <Paper sx={{ p: 2, mb: 3 }}>
                 <form onSubmit={handleCreate} style={{ display: 'flex', gap: '10px' }}>
                     <TextField
                         label="Tournament Name"
@@ -37,16 +43,27 @@ const TournamentList = () => {
                 </form>
             </Paper>
 
-            <List>
-                {list.map((t) => (
-                    <ListItem key={t.ID} component={Link} to={`/tournaments/${t.ID}`} sx={{
-                        bgcolor: 'background.paper', mb: 1, borderRadius: 1, textDecoration: 'none', color: 'inherit',
-                        '&:hover': { bgcolor: 'action.hover' }
-                    }}>
-                        <ListItemText primary={t.name} secondary={`Status: ${t.status} | Date: ${new Date(t.date).toLocaleDateString()}`} />
-                    </ListItem>
-                ))}
-            </List>
+            <TextField
+                label="Search Tournaments"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                fullWidth
+                sx={{ mb: 3 }}
+                placeholder="Search by name or status..."
+            />
+
+            <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+                <List>
+                    {filteredTournaments.map((t) => (
+                        <ListItem key={t.ID} component={Link} to={`/tournaments/${t.ID}`} sx={{
+                            bgcolor: 'background.paper', mb: 1, borderRadius: 1, textDecoration: 'none', color: 'inherit',
+                            '&:hover': { bgcolor: 'action.hover' }
+                        }}>
+                            <ListItemText primary={t.name} secondary={`Status: ${t.status} | Date: ${new Date(t.date).toLocaleDateString()}`} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
         </Box>
     );
 };

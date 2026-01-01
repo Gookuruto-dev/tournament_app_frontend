@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchLeagueStats } from '../store/participantsSlice';
+import type { ParticipantsState } from '../store/participantsSlice';
 import type { ParticipantStats } from '../types';
 import {
     Typography,
@@ -24,7 +25,7 @@ import type { RootState } from '../store';
 
 const Dashboard = () => {
     const dispatch = useAppDispatch();
-    const { leagueStats } = useAppSelector((state: RootState) => state.participants);
+    const leagueStats = useAppSelector((state: RootState) => (state.participants as ParticipantsState).leagueStats);
 
     useEffect(() => {
         dispatch(fetchLeagueStats());
@@ -44,7 +45,7 @@ const Dashboard = () => {
 
             {/* Quick Stats Summary */}
             <Grid container spacing={3} sx={{ mb: 6 }}>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Card sx={{ bgcolor: 'primary.dark', color: 'white' }}>
                         <CardContent sx={{ textAlign: 'center' }}>
                             <MilitaryTechIcon sx={{ fontSize: 40 }} />
@@ -53,7 +54,7 @@ const Dashboard = () => {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Card sx={{ bgcolor: 'secondary.dark', color: 'white' }}>
                         <CardContent sx={{ textAlign: 'center' }}>
                             <TrendingUpIcon sx={{ fontSize: 40 }} />
@@ -62,12 +63,12 @@ const Dashboard = () => {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                     <Card sx={{ bgcolor: 'success.dark', color: 'white' }}>
                         <CardContent sx={{ textAlign: 'center' }}>
                             <EmojiEventsIcon sx={{ fontSize: 40 }} />
                             <Typography variant="h6">Max Points</Typography>
-                            <Typography variant="h4">{leagueStats[0]?.total_points || 0}</Typography>
+                            <Typography variant="h4">{leagueStats[0]?.total_league_points || 0}</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -79,22 +80,22 @@ const Dashboard = () => {
             </Typography>
             <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 6 }}>
                 <Table>
-                    <TableHead sx={{ bgcolor: 'background.paper' }}>
+                    <TableHead sx={{ bgcolor: 'secondary.main' }}>
                         <TableRow>
-                            <TableCell align="center">Rank</TableCell>
-                            <TableCell>Participant</TableCell>
-                            <TableCell align="center">Points</TableCell>
-                            <TableCell align="center">Wins</TableCell>
-                            <TableCell align="center" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Tournaments</TableCell>
-                            <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Spin</TableCell>
-                            <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Burst</TableCell>
-                            <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Over</TableCell>
-                            <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Xtreme</TableCell>
+                            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rank</TableCell>
+                            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Player</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>LP</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>Wins</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold', display: { xs: 'none', sm: 'table-cell' } }}>T-Played</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>Spin</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>Burst</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>Over</TableCell>
+                            <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>Xtreme</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {leagueStats.map((stat: ParticipantStats, index: number) => (
-                            <TableRow key={stat.participant_id} hover>
+                            <TableRow key={stat.participant_id} sx={{ '&:nth-of-type(even)': { bgcolor: 'action.hover' } }}>
                                 <TableCell align="center">
                                     {index < 3 ? topThreeIcons[index] : index + 1}
                                 </TableCell>
@@ -106,7 +107,7 @@ const Dashboard = () => {
                                         {stat.nickname}
                                     </Box>
                                 </TableCell>
-                                <TableCell align="center" sx={{ fontWeight: 'bold' }}>{stat.total_points}</TableCell>
+                                <TableCell align="center" sx={{ fontWeight: 'bold', color: 'secondary.main' }}>{stat.total_league_points}</TableCell>
                                 <TableCell align="center">{stat.total_wins}</TableCell>
                                 <TableCell align="center" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{stat.tournaments_played}</TableCell>
                                 <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>{stat.total_spin}</TableCell>

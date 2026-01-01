@@ -8,9 +8,11 @@ import {
     generateMatches,
     advanceTournament,
     resetTournament,
-    archiveTournament
+    archiveTournament,
+    removeParticipantFromTournament
 } from '../store/tournamentsSlice';
-import { fetchParticipants } from '../store/participantsSlice';
+import { fetchParticipants, addParticipant } from '../store/participantsSlice';
+import type { ParticipantsState } from '../store/participantsSlice';
 import {
     Box,
     Typography,
@@ -32,24 +34,32 @@ import {
     Tab,
     Card,
     CardContent,
-    Grid
+    Grid,
+    Autocomplete,
+    TextField
 } from '@mui/material';
 import MatchScoring from '../components/MatchScoring';
+import ConfirmDialog from '../components/ConfirmDialog';
 import type { RootState } from '../store';
-import type { Participant } from '../types';
 
 const TournamentDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const tournament = useAppSelector((state: RootState) => state.tournaments.currentTournament);
-    const allParticipants = useAppSelector((state: RootState) => state.participants.list);
+    const allParticipants = useAppSelector((state: RootState) => (state.participants as ParticipantsState).list);
 
     const [selectedParticipant, setSelectedParticipant] = useState<number | ''>('');
     const [mainTab, setMainTab] = useState(0); // 0: Standings, 1: Matches
     const [groupTab, setGroupTab] = useState(0);
     const [selectedRound, setSelectedRound] = useState<number | 'all'>('all');
     const [scoringMatchId, setScoringMatchId] = useState<number | null>(null);
+    const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({
+        open: false,
+        title: '',
+        message: '',
+        onConfirm: () => { }
+    });
 
     useEffect(() => {
         if (id) {
@@ -128,35 +138,84 @@ const TournamentDetail = () => {
             </Tabs>
 
             {mainTab === 0 && (
-                <Grid container spacing={4}>
+                <Grid container spacing={3}>
                     {/* Left: Registration & Controls */}
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{ xs: 12, lg: 3 }}>
                         <Stack spacing={3}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h6" gutterBottom>Registration</Typography>
                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
                                         {tournament.tournament_participants?.map((tp) => (
-                                            <Chip key={tp.ID} label={tp.participant.nickname} size="small" />
+                                            <Chip
+                                                key={tp.ID}
+                                                label={tp.participant.nickname}
+                                                size="small"
+                                                onDelete={tournament.status === 'Created' ? () => {
+                                                    setConfirmDialog({
+                                                        open: true,
+                                                        title: 'Remove Participant',
+                                                        message: `Are you sure you want to remove ${tp.participant.nickname} from this tournament?`,
+                                                        onConfirm: () => {
+                                                            if (id) {
+                                                                dispatch(removeParticipantFromTournament({
+                                                                    tournamentId: Number(id),
+                                                                    participantId: tp.participant_id
+                                                                })).then(() => {
+                                                                    dispatch(fetchTournamentDetails(Number(id)));
+                                                                });
+                                                            }
+                                                            setConfirmDialog({ ...confirmDialog, open: false });
+                                                        }
+                                                    });
+                                                } : undefined}
+                                            />
                                         ))}
                                     </Stack>
 
                                     {tournament.status === 'Created' && (
-                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                            <FormControl fullWidth size="small">
-                                                <InputLabel>Add Player</InputLabel>
-                                                <Select
-                                                    value={selectedParticipant}
-                                                    label="Add Player"
-                                                    onChange={(e) => setSelectedParticipant(Number(e.target.value))}
-                                                >
-                                                    {allParticipants.map((p: Participant) => (
-                                                        <MenuItem key={p.ID} value={p.ID}>{p.nickname}</MenuItem>
-                                                    ))}
-                                                </Select>
-                                            </FormControl>
+                                        <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+                                            <Autocomplete
+                                                options={allParticipants}
+                                                getOptionLabel={(option) => typeof option === 'string' ? option : option.nickname}
+                                                value={allParticipants.find(p => p.ID === selectedParticipant) || null}
+                                                onChange={(_, newValue) => {
+                                                    if (newValue && typeof newValue !== 'string') {
+                                                        setSelectedParticipant(newValue.ID);
+                                                    }
+                                                }}
+                                                onInputChange={(_, newInputValue) => {
+                                                    // Check if user pressed Enter with a new name
+                                                    if (newInputValue && !allParticipants.some(p => p.nickname.toLowerCase() === newInputValue.toLowerCase())) {
+                                                        // This will be handled by onKeyDown
+                                                    }
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Add Player"
+                                                        size="small"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                const inputValue = (e.target as HTMLInputElement).value;
+                                                                if (inputValue && !allParticipants.some(p => p.nickname.toLowerCase() === inputValue.toLowerCase())) {
+                                                                    e.preventDefault();
+                                                                    if (window.confirm(`Create new participant "${inputValue}"?`)) {
+                                                                        dispatch(addParticipant({ nickname: inputValue, is_archived: false, avatar: '' })).then(() => {
+                                                                            dispatch(fetchParticipants(false));
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                                freeSolo
+                                                fullWidth
+                                                size="small"
+                                            />
                                             <Button variant="contained" onClick={handleAddParticipant} disabled={!selectedParticipant}>
-                                                Add
+                                                Add to Tournament
                                             </Button>
                                         </Box>
                                     )}
@@ -228,24 +287,24 @@ const TournamentDetail = () => {
                     </Grid>
 
                     {/* Right: Standings */}
-                    <Grid size={{ xs: 12, md: 8 }}>
+                    <Grid size={{ xs: 12, lg: 9 }}>
                         {groups.length === 0 && (
                             <Paper sx={{ p: 4, textAlign: 'center' }}>
                                 <Typography color="text.secondary">Register players and generate groups to see standings.</Typography>
                             </Paper>
                         )}
-                        <Grid container spacing={2}>
+                        <Grid container spacing={3}>
                             {groups.map(groupName => (
-                                <Grid size={{ xs: 12, lg: 6 }} key={groupName}>
-                                    <Paper sx={{ p: 2 }}>
-                                        <Typography variant="h6" color="primary" gutterBottom>Group {groupName} Standings</Typography>
+                                <Grid size={{ xs: 12, md: 12, xl: 6 }} key={groupName}>
+                                    <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
+                                        <Typography variant="h5" color="primary" gutterBottom fontWeight="bold">Group {groupName} Standings</Typography>
                                         <TableContainer>
-                                            <Table size="small">
+                                            <Table sx={{ tableLayout: 'auto', width: '100%' }}>
                                                 <TableHead>
                                                     <TableRow>
-                                                        <TableCell>Player</TableCell>
-                                                        <TableCell align="right">Pts</TableCell>
-                                                        <TableCell align="right">W/L</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem', fontWeight: 'bold', py: 2, wordBreak: 'break-word' }}>Player</TableCell>
+                                                        <TableCell align="right" sx={{ fontSize: '1rem', fontWeight: 'bold', py: 2, width: '80px' }}>Pts</TableCell>
+                                                        <TableCell align="right" sx={{ fontSize: '1rem', fontWeight: 'bold', py: 2, width: '80px' }}>W/L</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -254,9 +313,9 @@ const TournamentDetail = () => {
                                                         .sort((a, b) => b.points - a.points || b.wins - a.wins)
                                                         .map((tp) => (
                                                             <TableRow key={tp.ID}>
-                                                                <TableCell>{tp.participant.nickname}</TableCell>
-                                                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>{tp.points}</TableCell>
-                                                                <TableCell align="right">{tp.wins}-{tp.losses}</TableCell>
+                                                                <TableCell sx={{ fontSize: '0.95rem', py: 1.5 }}>{tp.participant.nickname}</TableCell>
+                                                                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '0.95rem', py: 1.5 }}>{tp.points}</TableCell>
+                                                                <TableCell align="right" sx={{ fontSize: '0.95rem', py: 1.5 }}>{tp.wins}-{tp.losses}</TableCell>
                                                             </TableRow>
                                                         ))}
                                                 </TableBody>
@@ -370,6 +429,16 @@ const TournamentDetail = () => {
                 open={!!scoringMatchId}
                 matchId={scoringMatchId}
                 onClose={() => setScoringMatchId(null)}
+            />
+
+            <ConfirmDialog
+                open={confirmDialog.open}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                onConfirm={confirmDialog.onConfirm}
+                onCancel={() => setConfirmDialog({ ...confirmDialog, open: false })}
+                confirmColor="error"
+                confirmText="Remove"
             />
         </Box>
     );
