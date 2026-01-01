@@ -25,7 +25,7 @@ export const fetchParticipants = createAsyncThunk('participants/fetchParticipant
 });
 
 export const fetchLeagueStats = createAsyncThunk('participants/fetchLeagueStats', async () => {
-    const response = await fetch('${config.apiUrl}/stats');
+    const response = await fetch(`${config.apiUrl}/stats`);
     if (!response.ok) {
         throw new Error('Failed to fetch league stats');
     }
@@ -33,7 +33,7 @@ export const fetchLeagueStats = createAsyncThunk('participants/fetchLeagueStats'
 });
 
 export const addParticipant = createAsyncThunk('participants/addParticipant', async (newParticipant: Omit<Participant, 'ID'>) => {
-    const response = await fetch('${config.apiUrl}/participants', {
+    const response = await fetch(`${config.apiUrl}/participants`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -86,4 +86,5 @@ const participantsSlice = createSlice({
 });
 
 export default participantsSlice.reducer;
+
 

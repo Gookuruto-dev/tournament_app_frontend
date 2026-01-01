@@ -29,7 +29,7 @@ export const fetchTournaments = createAsyncThunk('tournaments/fetchAll', async (
 });
 
 export const createTournament = createAsyncThunk('tournaments/create', async (name: string) => {
-    const response = await fetch('${config.apiUrl}/tournaments', {
+    const response = await fetch(`${config.apiUrl}/tournaments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
@@ -209,4 +209,5 @@ const tournamentsSlice = createSlice({
 });
 
 export default tournamentsSlice.reducer;
+
 
