@@ -59,7 +59,7 @@ const Dashboard = () => {
                         <CardContent sx={{ textAlign: 'center' }}>
                             <TrendingUpIcon sx={{ fontSize: 40 }} />
                             <Typography variant="h6">Current Leader</Typography>
-                            <Typography variant="h4">{leagueStats[0]?.nickname || '-'}</Typography>
+                            <Typography variant="h4">{(leagueStats && leagueStats[0]?.nickname) || '-'}</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -68,7 +68,7 @@ const Dashboard = () => {
                         <CardContent sx={{ textAlign: 'center' }}>
                             <EmojiEventsIcon sx={{ fontSize: 40 }} />
                             <Typography variant="h6">Max Points</Typography>
-                            <Typography variant="h4">{leagueStats[0]?.total_league_points || 0}</Typography>
+                            <Typography variant="h4">{(leagueStats && leagueStats[0]?.total_league_points) || 0}</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
