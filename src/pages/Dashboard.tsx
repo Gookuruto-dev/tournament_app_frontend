@@ -94,7 +94,7 @@ const Dashboard = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {leagueStats?.map((stat: ParticipantStats, index: number) => (
+                        {leagueStats && leagueStats.map((stat: ParticipantStats, index: number) => (
                             <TableRow key={stat.participant_id} sx={{ '&:nth-of-type(even)': { bgcolor: 'action.hover' } }}>
                                 <TableCell align="center">
                                     {index < 3 ? topThreeIcons[index] : index + 1}
