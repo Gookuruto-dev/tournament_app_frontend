@@ -118,6 +118,14 @@ export const archiveTournament = createAsyncThunk('tournaments/archive', async (
     return id;
 });
 
+export const unarchiveTournament = createAsyncThunk('tournaments/unarchive', async (id: number) => {
+    const response = await fetch(`${config.apiUrl}/tournaments/${id}/unarchive`, {
+        method: 'POST',
+    });
+    if (!response.ok) throw new Error('Failed to unarchive tournament');
+    return id;
+});
+
 export const generateGroups = createAsyncThunk('tournaments/generateGroups', async (tournamentId: number) => {
     const response = await fetch(`${config.apiUrl}/tournaments/${tournamentId}/groups`, {
         method: 'POST',

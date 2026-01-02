@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { fetchParticipants } from '../store/participantsSlice';
-import { fetchTournaments } from '../store/tournamentsSlice';
+import { fetchTournaments, unarchiveTournament } from '../store/tournamentsSlice';
 import type { Participant, Tournament } from '../types';
 import {
     Box,
@@ -13,9 +13,11 @@ import {
     Tabs,
     Tab,
     Divider,
-    Stack
+    Stack,
+    IconButton
 } from '@mui/material';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import { Unarchive } from '@mui/icons-material';
 
 const Archives = () => {
     const dispatch = useAppDispatch();
@@ -35,6 +37,10 @@ const Archives = () => {
             }
         });
     }, [dispatch]);
+
+    function handleUnarchive(ID: number): void {
+        dispatch(unarchiveTournament(ID));
+    }
 
     return (
         <Box>
@@ -66,7 +72,11 @@ const Archives = () => {
             {tab === 1 && (
                 <List>
                     {archivedTournaments.map((t) => (
-                        <ListItem key={t.ID} sx={{ bgcolor: 'background.paper', mb: 1, borderRadius: 2, opacity: 0.7 }}>
+                        <ListItem key={t.ID} sx={{ bgcolor: 'background.paper', mb: 1, borderRadius: 2, opacity: 0.7 }} secondaryAction={
+                            <IconButton edge="end" aria-label="archive" onClick={() => handleUnarchive(t.ID)}>
+                                <Unarchive />
+                            </IconButton>
+                        }>
                             <ListItemText primary={t.name} secondary={`Finished on: ${new Date(t.date).toLocaleDateString()}`} />
                         </ListItem>
                     ))}
